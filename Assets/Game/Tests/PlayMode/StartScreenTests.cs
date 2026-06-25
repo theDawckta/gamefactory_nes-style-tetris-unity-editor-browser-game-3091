@@ -136,4 +136,21 @@ public class StartScreenTests
         Assert.DoesNotThrow(() => _screen.Show());
         yield return null;
     }
+
+    [UnityTest]
+    public IEnumerator ReturnToStart_Works_WhenLeaderboardOffline()
+    {
+        var svcGo = new GameObject("LeaderboardService");
+        svcGo.AddComponent<LeaderboardService>();
+        yield return null;
+        svcGo.SetActive(false);
+        yield return null;
+
+        LogAssert.NoUnexpectedReceived();
+        _screen.Show();
+        yield return null;
+
+        LogAssert.NoUnexpectedReceived();
+        Object.Destroy(svcGo);
+    }
 }
