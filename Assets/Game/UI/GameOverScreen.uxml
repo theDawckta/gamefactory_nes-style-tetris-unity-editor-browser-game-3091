@@ -1,0 +1,11 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="GameOverScreen.uss" />
+    <ui:VisualElement name="gameOverScreenRoot" class="game-over-screen">
+        <ui:VisualElement class="game-over-panel">
+            <ui:Label text="GAME OVER" class="game-over-label" />
+            <ui:VisualElement name="finalScoreRegion" class="final-score-region" />
+            <ui:VisualElement name="initialsRegion" class="initials-region" />
+            <ui:VisualElement name="returnPromptRegion" class="return-prompt-region" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
