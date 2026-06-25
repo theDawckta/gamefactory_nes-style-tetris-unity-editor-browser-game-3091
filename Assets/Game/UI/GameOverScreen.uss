@@ -1,0 +1,71 @@
+.game-over-screen {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    align-items: center;
+    justify-content: center;
+}
+
+.center-panel {
+    width: 70%;
+    flex-direction: column;
+    align-items: center;
+}
+
+.game-over-label {
+    font-size: 48px;
+    color: rgb(255, 255, 255);
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    background-color: rgb(230, 230, 235);
+    border-color: rgb(180, 180, 200);
+    border-width: 2px;
+    border-radius: 8px;
+    padding: 12px 24px;
+    width: 100%;
+    margin-bottom: 16px;
+    color: rgb(50, 50, 50);
+}
+
+.final-score-region {
+    width: 100%;
+    height: 64px;
+    background-color: rgb(255, 253, 231);
+    border-color: rgb(200, 168, 0);
+    border-width: 2px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    align-items: center;
+    justify-content: center;
+}
+
+.initials-region {
+    width: 100%;
+    height: 80px;
+    background-color: rgb(220, 235, 255);
+    border-color: rgb(100, 150, 220);
+    border-width: 2px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    align-items: center;
+    justify-content: center;
+    display: none;
+}
+
+.return-prompt-region {
+    width: 100%;
+    height: 48px;
+    background-color: rgb(220, 240, 225);
+    border-color: rgb(100, 180, 120);
+    border-width: 2px;
+    border-radius: 8px;
+    align-items: center;
+    justify-content: center;
+    display: none;
+}
+
+.score-value-label {
+    font-size: 28px;
+    color: rgb(50, 50, 50);
+    -unity-text-align: middle-center;
+}

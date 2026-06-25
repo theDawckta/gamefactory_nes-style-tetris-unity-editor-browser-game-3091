@@ -1,22 +1,52 @@
-using UnityEngine;
 using UnityEngine.UIElements;
 
-// Stub for issues #28/#5 -- exposes regions and methods for UI widgets
-public class GameOverScreen : MonoBehaviour
+public class GameOverScreen : BaseScreen
 {
-    public VisualElement InitialsRegion { get; set; }
     public VisualElement FinalScoreRegion { get; set; }
+    public VisualElement InitialsRegion { get; set; }
     public VisualElement ReturnPromptRegion { get; set; }
 
-    [SerializeField] private FinalScoreWidget _finalScoreWidget;
+    protected override void OnShow()
+    {
+        FinalScoreRegion = Document?.rootVisualElement?.Q("finalScoreRegion");
+        InitialsRegion = Document?.rootVisualElement?.Q("initialsRegion");
+        ReturnPromptRegion = Document?.rootVisualElement?.Q("returnPromptRegion");
+    }
 
     public void ShowWithScore(int score)
     {
-        _finalScoreWidget?.SetScore(score);
+        Show();
+
+        if (FinalScoreRegion != null)
+        {
+            FinalScoreRegion.Clear();
+            var scoreLabel = new Label(score.ToString());
+            scoreLabel.AddToClassList("score-value-label");
+            FinalScoreRegion.Add(scoreLabel);
+        }
+
+        bool isTopFive = LeaderboardService.Instance != null && LeaderboardService.Instance.IsTopFive(score);
+        if (isTopFive)
+        {
+            if (InitialsRegion != null)
+                InitialsRegion.style.display = DisplayStyle.Flex;
+            if (ReturnPromptRegion != null)
+                ReturnPromptRegion.style.display = DisplayStyle.None;
+        }
+        else
+        {
+            if (InitialsRegion != null)
+                InitialsRegion.style.display = DisplayStyle.None;
+            if (ReturnPromptRegion != null)
+                ReturnPromptRegion.style.display = DisplayStyle.Flex;
+        }
     }
 
     public void ShowReturnPrompt()
     {
-        // Full implementation in issue #28
+        if (InitialsRegion != null)
+            InitialsRegion.style.display = DisplayStyle.None;
+        if (ReturnPromptRegion != null)
+            ReturnPromptRegion.style.display = DisplayStyle.Flex;
     }
 }
