@@ -1,0 +1,10 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="StartScreen.uss" />
+    <ui:VisualElement name="startScreenRoot" class="start-screen">
+        <ui:Label name="titleLabel" text="TETRIS" class="title-label" />
+        <ui:VisualElement name="leaderboardRegion" class="leaderboard-region">
+            <ui:Label name="loadingLabel" text="LOADING..." class="loading-label" />
+        </ui:VisualElement>
+        <ui:VisualElement name="promptRegion" class="prompt-region" />
+    </ui:VisualElement>
+</ui:UXML>
