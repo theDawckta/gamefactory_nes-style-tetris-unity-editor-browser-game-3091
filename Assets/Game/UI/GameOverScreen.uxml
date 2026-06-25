@@ -1,0 +1,10 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="overlay" style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; background-color: rgba(0,0,0,0.7); align-items: center; justify-content: center;">
+        <ui:VisualElement name="panel" style="align-items: center; width: 60%; min-width: 300px;">
+            <ui:Label name="gameOverLabel" text="GAME OVER" class="game-over-label" style="font-size: 48px; color: white; -unity-text-align: upper-center; margin-bottom: 20px; width: 100%;"/>
+            <ui:VisualElement name="finalScoreRegion" class="region final-score-region" style="width: 100%; min-height: 50px; align-items: center; justify-content: center; margin-bottom: 16px;"/>
+            <ui:VisualElement name="initialsRegion" class="region initials-region" style="width: 100%; min-height: 80px; align-items: center; justify-content: center; margin-bottom: 16px; display: none;"/>
+            <ui:VisualElement name="returnPromptRegion" class="region return-prompt-region" style="width: 100%; min-height: 50px; align-items: center; justify-content: center; display: none;"/>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
