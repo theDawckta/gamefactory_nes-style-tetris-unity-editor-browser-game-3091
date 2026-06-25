@@ -66,26 +66,26 @@ public class AudioManager : MonoBehaviour
 
     private void WireEvents()
     {
-        SceneController sceneController = UnityEngine.Object.FindFirstObjectByType<SceneController>();
+        SceneController sceneController = UnityEngine.Object.FindAnyObjectByType<SceneController>();
         if (sceneController != null)
             sceneController.OnGameStarted += HandleGameStarted;
 
-        StartScreen startScreen = UnityEngine.Object.FindFirstObjectByType<StartScreen>();
+        StartScreen startScreen = UnityEngine.Object.FindAnyObjectByType<StartScreen>();
         if (startScreen != null)
             startScreen.OnScreenShown += HandleStartScreenShown;
 
-        GameplayController gameplay = UnityEngine.Object.FindFirstObjectByType<GameplayController>();
+        GameplayController gameplay = UnityEngine.Object.FindAnyObjectByType<GameplayController>();
         if (gameplay != null)
         {
             gameplay.OnGameOver += HandleGameOver;
             gameplay.Scoring.OnStatsChanged += HandleStatsChanged;
         }
 
-        PieceController pieceController = UnityEngine.Object.FindFirstObjectByType<PieceController>();
+        PieceController pieceController = UnityEngine.Object.FindAnyObjectByType<PieceController>();
         if (pieceController != null)
             pieceController.OnPieceLocked += HandlePieceLocked;
 
-        InitialsEntryWidget initialsWidget = UnityEngine.Object.FindFirstObjectByType<InitialsEntryWidget>();
+        InitialsEntryWidget initialsWidget = UnityEngine.Object.FindAnyObjectByType<InitialsEntryWidget>();
         if (initialsWidget != null)
         {
             initialsWidget.OnCharacterCycled += HandleCharacterCycled;
