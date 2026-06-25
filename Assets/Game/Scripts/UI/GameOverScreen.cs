@@ -1,10 +1,18 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
-// Stub for issue #28 -- exposes InitialsRegion and ShowReturnPrompt for InitialsEntryWidget
+// Stub for issues #28/#5 -- exposes regions and methods for UI widgets
 public class GameOverScreen : MonoBehaviour
 {
     public VisualElement InitialsRegion { get; set; }
+    public VisualElement FinalScoreRegion { get; set; }
+
+    [SerializeField] private FinalScoreWidget _finalScoreWidget;
+
+    public void ShowWithScore(int score)
+    {
+        _finalScoreWidget?.SetScore(score);
+    }
 
     public void ShowReturnPrompt()
     {
