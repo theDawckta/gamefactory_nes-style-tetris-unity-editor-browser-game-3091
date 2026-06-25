@@ -21,6 +21,7 @@ public class PieceController : MonoBehaviour
     public Vector2Int CurrentPivot { get; private set; }
     public int CurrentRotation { get; private set; }
     public int Level { get; set; }
+    public TetrominoData ActivePiece => _activePiece;
 
     private TetrominoData _activePiece;
     private float _gravityTimer;
