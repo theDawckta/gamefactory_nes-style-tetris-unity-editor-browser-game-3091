@@ -3,7 +3,7 @@
     height: 100%;
     flex-direction: row;
     justify-content: space-between;
-    background-color: rgba(0, 0, 0, 0);
+    background-color: rgb(173, 216, 230);
 }
 
 .left-column {
