@@ -21,7 +21,7 @@ public class StartScreen : BaseScreen
     {
         base.Show();
         _leaderboardWidget?.SetLoading();
-        if (LeaderboardService.Instance != null)
+        if (LeaderboardService.Instance != null && LeaderboardService.Instance.gameObject.activeInHierarchy)
             LeaderboardService.Instance.FetchScores(OnScoresFetched);
     }
 
