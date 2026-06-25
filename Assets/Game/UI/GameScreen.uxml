@@ -1,0 +1,14 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="GameScreen.uss" />
+    <ui:VisualElement name="gameScreenRoot" class="game-screen">
+        <ui:VisualElement name="leftColumn" class="left-column">
+            <ui:VisualElement name="scoreRegion" class="hud-region" />
+            <ui:VisualElement name="levelRegion" class="hud-region" />
+            <ui:VisualElement name="linesRegion" class="hud-region" />
+        </ui:VisualElement>
+        <ui:VisualElement name="rightColumn" class="right-column">
+            <ui:Label text="NEXT" class="next-label" />
+            <ui:VisualElement name="nextPieceRegion" class="next-piece-region" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
