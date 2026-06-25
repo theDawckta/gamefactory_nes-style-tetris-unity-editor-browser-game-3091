@@ -3,27 +3,36 @@ using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
+using UnityEngine.UIElements;
 
 public class NextPieceWidgetTests
 {
+    private GameObject _screenGo;
+    private UIDocument _uiDoc;
+    private GameScreen _gameScreen;
+    private VisualElement _nextPieceRegion;
     private GameObject _widgetGo;
     private NextPieceWidget _widget;
-    private Sprite _blockSprite;
-    private Texture2D _blockTex;
     private TetrominoData _oPiece;
     private TetrominoData _iPiece;
 
-    [SetUp]
-    public void SetUp()
+    [UnitySetUp]
+    public IEnumerator SetUp()
     {
-        _blockTex = new Texture2D(1, 1);
-        _blockTex.SetPixel(0, 0, Color.white);
-        _blockTex.Apply();
-        _blockSprite = Sprite.Create(_blockTex, new Rect(0, 0, 1, 1), Vector2.one * 0.5f, 1f);
+        _screenGo = new GameObject("GameScreenTest");
+        var panelSettings = ScriptableObject.CreateInstance<PanelSettings>();
+        _uiDoc = _screenGo.AddComponent<UIDocument>();
+        _uiDoc.panelSettings = panelSettings;
+        _gameScreen = _screenGo.AddComponent<GameScreen>();
+
+        _nextPieceRegion = new VisualElement { name = "nextPieceRegion" };
+        _uiDoc.rootVisualElement.Add(_nextPieceRegion);
 
         _widgetGo = new GameObject("NextPieceWidget");
         _widget = _widgetGo.AddComponent<NextPieceWidget>();
-        _widget.BlockSprite = _blockSprite;
+
+        var screenField = typeof(NextPieceWidget).GetField("_gameScreen", BindingFlags.NonPublic | BindingFlags.Instance);
+        screenField.SetValue(_widget, _gameScreen);
 
         _oPiece = ScriptableObject.CreateInstance<TetrominoData>();
         _oPiece.colorIndex = 2;
@@ -40,41 +49,60 @@ public class NextPieceWidgetTests
             cells = new[] { new Vector2Int(-1, 0), new Vector2Int(0, 0), new Vector2Int(1, 0), new Vector2Int(2, 0) }
         };
         _iPiece.rotationStates = new[] { iState, iState, iState, iState };
+
+        yield return null;
     }
 
-    [TearDown]
-    public void TearDown()
+    [UnityTearDown]
+    public IEnumerator TearDown()
     {
         Object.Destroy(_widgetGo);
+        Object.Destroy(_screenGo);
         Object.Destroy(_oPiece);
         Object.Destroy(_iPiece);
-        Object.Destroy(_blockTex);
+        yield return null;
+    }
+
+    private int CountLitCells(VisualElement region)
+    {
+        int count = 0;
+        region.Query<VisualElement>().ForEach(el =>
+        {
+            if (el.name != null && el.name.StartsWith("PreviewCell_") && el.style.backgroundColor.value.a > 0f)
+                count++;
+        });
+        return count;
     }
 
     [UnityTest]
-    public IEnumerator NextPieceWidget_Start_Creates16PreviewCells()
+    public IEnumerator NextPieceWidget_Start_Creates16PreviewCellsInUIDocument()
     {
         yield return null;
         int count = 0;
-        foreach (Transform child in _widget.transform)
+        _nextPieceRegion.Query<VisualElement>().ForEach(el =>
         {
-            if (child.name.StartsWith("PreviewCell_"))
+            if (el.name != null && el.name.StartsWith("PreviewCell_"))
                 count++;
-        }
+        });
         Assert.AreEqual(16, count);
+    }
+
+    [UnityTest]
+    public IEnumerator NextPieceWidget_Start_HasNoWorldSpaceChildObjects()
+    {
+        yield return null;
+        Assert.AreEqual(0, _widgetGo.transform.childCount, "NextPieceWidget must not create world-space GameObjects");
     }
 
     [UnityTest]
     public IEnumerator NextPieceWidget_InitialCells_AreAllTransparent()
     {
         yield return null;
-        foreach (Transform child in _widget.transform)
+        _nextPieceRegion.Query<VisualElement>().ForEach(el =>
         {
-            if (!child.name.StartsWith("PreviewCell_"))
-                continue;
-            var sr = child.GetComponent<SpriteRenderer>();
-            Assert.AreEqual(0f, sr.color.a, 0.001f, $"{child.name} should be transparent");
-        }
+            if (el.name != null && el.name.StartsWith("PreviewCell_"))
+                Assert.AreEqual(0f, el.style.backgroundColor.value.a, 0.001f, $"{el.name} should be transparent initially");
+        });
     }
 
     [UnityTest]
@@ -84,21 +112,20 @@ public class NextPieceWidgetTests
         _widget.DrawPiece(_oPiece);
         yield return null;
 
-        // O-piece colorIndex=2 = yellow: r=240/255, g=240/255, b=0
         int litCount = 0;
-        foreach (Transform child in _widget.transform)
+        _nextPieceRegion.Query<VisualElement>().ForEach(el =>
         {
-            if (!child.name.StartsWith("PreviewCell_"))
-                continue;
-            var sr = child.GetComponent<SpriteRenderer>();
-            if (sr.color.a > 0f)
+            if (el.name == null || !el.name.StartsWith("PreviewCell_")) return;
+            var bg = el.style.backgroundColor.value;
+            if (bg.a > 0f)
             {
-                Assert.AreEqual(240f / 255f, sr.color.r, 0.01f, $"{child.name} wrong red");
-                Assert.AreEqual(240f / 255f, sr.color.g, 0.01f, $"{child.name} wrong green");
-                Assert.AreEqual(0f, sr.color.b, 0.01f, $"{child.name} wrong blue");
+                // O-piece colorIndex=2 = yellow: r=240/255, g=240/255, b=0
+                Assert.AreEqual(240f / 255f, bg.r, 0.01f, $"{el.name} wrong red");
+                Assert.AreEqual(240f / 255f, bg.g, 0.01f, $"{el.name} wrong green");
+                Assert.AreEqual(0f, bg.b, 0.01f, $"{el.name} wrong blue");
                 litCount++;
             }
-        }
+        });
         Assert.AreEqual(4, litCount, "O-piece should light exactly 4 cells");
     }
 
@@ -109,21 +136,20 @@ public class NextPieceWidgetTests
         _widget.DrawPiece(_iPiece);
         yield return null;
 
-        // I-piece colorIndex=1 = cyan: r=0, g=240/255, b=240/255
         int litCount = 0;
-        foreach (Transform child in _widget.transform)
+        _nextPieceRegion.Query<VisualElement>().ForEach(el =>
         {
-            if (!child.name.StartsWith("PreviewCell_"))
-                continue;
-            var sr = child.GetComponent<SpriteRenderer>();
-            if (sr.color.a > 0f)
+            if (el.name == null || !el.name.StartsWith("PreviewCell_")) return;
+            var bg = el.style.backgroundColor.value;
+            if (bg.a > 0f)
             {
-                Assert.AreEqual(0f, sr.color.r, 0.01f, $"{child.name} wrong red");
-                Assert.AreEqual(240f / 255f, sr.color.g, 0.01f, $"{child.name} wrong green");
-                Assert.AreEqual(240f / 255f, sr.color.b, 0.01f, $"{child.name} wrong blue");
+                // I-piece colorIndex=1 = cyan: r=0, g=240/255, b=240/255
+                Assert.AreEqual(0f, bg.r, 0.01f, $"{el.name} wrong red");
+                Assert.AreEqual(240f / 255f, bg.g, 0.01f, $"{el.name} wrong green");
+                Assert.AreEqual(240f / 255f, bg.b, 0.01f, $"{el.name} wrong blue");
                 litCount++;
             }
-        }
+        });
         Assert.AreEqual(4, litCount, "I-piece should light exactly 4 cells");
     }
 
@@ -136,17 +162,7 @@ public class NextPieceWidgetTests
         _widget.DrawPiece(_iPiece);
         yield return null;
 
-        // After switching pieces only 4 cells total should be lit
-        int litCount = 0;
-        foreach (Transform child in _widget.transform)
-        {
-            if (!child.name.StartsWith("PreviewCell_"))
-                continue;
-            var sr = child.GetComponent<SpriteRenderer>();
-            if (sr.color.a > 0f)
-                litCount++;
-        }
-        Assert.AreEqual(4, litCount, "Exactly 4 cells should be lit after switching piece");
+        Assert.AreEqual(4, CountLitCells(_nextPieceRegion), "Exactly 4 cells should be lit after switching piece");
     }
 
     [UnityTest]
@@ -158,69 +174,45 @@ public class NextPieceWidgetTests
         _widget.DrawPiece(null);
         yield return null;
 
-        foreach (Transform child in _widget.transform)
+        _nextPieceRegion.Query<VisualElement>().ForEach(el =>
         {
-            if (!child.name.StartsWith("PreviewCell_"))
-                continue;
-            var sr = child.GetComponent<SpriteRenderer>();
-            Assert.AreEqual(0f, sr.color.a, 0.001f, $"{child.name} should be transparent after null piece");
-        }
+            if (el.name != null && el.name.StartsWith("PreviewCell_"))
+                Assert.AreEqual(0f, el.style.backgroundColor.value.a, 0.001f, $"{el.name} should be transparent after null piece");
+        });
     }
 
     [UnityTest]
     public IEnumerator NextPieceWidget_OnNextPieceChanged_UpdatesPreview()
     {
-        // Create a fresh widget in the test body so GameplayController is set before Start() runs.
-        // The test runner may process a frame between SetUp and the first yield, causing
-        // the shared _widget's Start() to fire before the test body can set GameplayController.
         var gcGo = new GameObject("GameplayController");
         var controller = gcGo.AddComponent<GameplayController>();
 
+        var freshScreenGo = new GameObject("GameScreenFresh");
+        var freshPanelSettings = ScriptableObject.CreateInstance<PanelSettings>();
+        var freshUiDoc = freshScreenGo.AddComponent<UIDocument>();
+        freshUiDoc.panelSettings = freshPanelSettings;
+        var freshScreen = freshScreenGo.AddComponent<GameScreen>();
+        var freshRegion = new VisualElement { name = "nextPieceRegion" };
+        freshUiDoc.rootVisualElement.Add(freshRegion);
+
         var freshGo = new GameObject("FreshNextPieceWidget");
         var freshWidget = freshGo.AddComponent<NextPieceWidget>();
-        freshWidget.BlockSprite = _blockSprite;
-        freshWidget.GameplayController = controller; // set before Start()
+        freshWidget.GameplayController = controller;
 
-        yield return null; // Start() runs; freshWidget subscribes to OnNextPieceChanged
+        var screenField = typeof(NextPieceWidget).GetField("_gameScreen", BindingFlags.NonPublic | BindingFlags.Instance);
+        screenField.SetValue(freshWidget, freshScreen);
 
-        // Invoke the backing delegate via reflection (event can only be raised from inside the class)
-        var field = typeof(GameplayController).GetField("OnNextPieceChanged",
+        yield return null;
+
+        var eventField = typeof(GameplayController).GetField("OnNextPieceChanged",
             BindingFlags.Instance | BindingFlags.NonPublic);
-        var del = field?.GetValue(controller) as System.Action<TetrominoData>;
+        var del = eventField?.GetValue(controller) as System.Action<TetrominoData>;
         del?.Invoke(_oPiece);
 
-        int litCount = 0;
-        foreach (Transform child in freshGo.transform)
-        {
-            if (!child.name.StartsWith("PreviewCell_"))
-                continue;
-            if (child.GetComponent<SpriteRenderer>().color.a > 0f)
-                litCount++;
-        }
-        Assert.AreEqual(4, litCount, "Exactly 4 cells should be lit after OnNextPieceChanged fires");
+        Assert.AreEqual(4, CountLitCells(freshRegion), "Exactly 4 cells should be lit after OnNextPieceChanged fires");
 
         Object.Destroy(freshGo);
         Object.Destroy(gcGo);
-    }
-
-    [UnityTest]
-    public IEnumerator NextPieceWidget_CellScale_Is90PercentOfCellSize()
-    {
-        yield return null;
-        var cell = _widget.transform.Find("PreviewCell_0_0");
-        Assert.IsNotNull(cell);
-        float expected = 24f * 0.9f;
-        Assert.AreEqual(expected, cell.localScale.x, 0.001f);
-        Assert.AreEqual(expected, cell.localScale.y, 0.001f);
-    }
-
-    [UnityTest]
-    public IEnumerator NextPieceWidget_PreviewCells_HaveBlockSprite()
-    {
-        yield return null;
-        var cell = _widget.transform.Find("PreviewCell_0_0");
-        Assert.IsNotNull(cell);
-        var sr = cell.GetComponent<SpriteRenderer>();
-        Assert.AreEqual(_blockSprite, sr.sprite);
+        Object.Destroy(freshScreenGo);
     }
 }
