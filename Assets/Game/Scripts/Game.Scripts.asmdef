@@ -1,6 +1,6 @@
 {
   "name": "Game.Scripts",
-  "references": [],
+  "references": ["Unity.InputSystem"],
   "includePlatforms": [],
   "excludePlatforms": [],
   "allowUnsafeCode": false,
