@@ -21,7 +21,7 @@
 
 .hud-region {
     width: 160px;
-    height: 80px;
+    min-height: 80px;
     background-color: rgb(255, 253, 231);
     border-color: rgb(200, 168, 0);
     border-width: 2px;
@@ -45,7 +45,7 @@
 
 .next-piece-region {
     width: 160px;
-    height: 160px;
+    min-height: 160px;
     background-color: rgb(255, 253, 231);
     border-color: rgb(200, 168, 0);
     border-width: 2px;

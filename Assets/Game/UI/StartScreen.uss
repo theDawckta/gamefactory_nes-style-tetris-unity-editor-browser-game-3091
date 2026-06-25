@@ -37,7 +37,7 @@
 
 .prompt-region {
     width: 80%;
-    height: 64px;
+    min-height: 64px;
     background-color: rgb(230, 230, 235);
     border-color: rgb(180, 180, 200);
     border-width: 1px;
