@@ -6,6 +6,7 @@ using UnityEngine.UIElements;
 public class StartScreen : BaseScreen
 {
     public event Action OnStartPressed;
+    public event Action OnScreenShown;
 
     [SerializeField] private LeaderboardWidget _leaderboardWidget;
 
@@ -24,7 +25,11 @@ public class StartScreen : BaseScreen
             LeaderboardService.Instance.FetchScores(OnScoresFetched);
     }
 
-    protected override void OnShow() => _listening = true;
+    protected override void OnShow()
+    {
+        _listening = true;
+        OnScreenShown?.Invoke();
+    }
     protected override void OnHide() => _listening = false;
 
     private void Update()
