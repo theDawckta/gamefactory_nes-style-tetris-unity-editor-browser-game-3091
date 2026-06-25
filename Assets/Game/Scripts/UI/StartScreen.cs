@@ -7,6 +7,8 @@ public class StartScreen : BaseScreen
 {
     public event Action OnStartPressed;
 
+    [SerializeField] private LeaderboardWidget _leaderboardWidget;
+
     private VisualElement _leaderboardRegion;
     private VisualElement _promptRegion;
     private bool _listening;
@@ -17,12 +19,7 @@ public class StartScreen : BaseScreen
     public override void Show()
     {
         base.Show();
-        if (LeaderboardRegion != null)
-        {
-            var loadingLabel = LeaderboardRegion.Q<Label>("loadingLabel");
-            if (loadingLabel != null)
-                loadingLabel.style.display = DisplayStyle.Flex;
-        }
+        _leaderboardWidget?.SetLoading();
         if (LeaderboardService.Instance != null)
             LeaderboardService.Instance.FetchScores(OnScoresFetched);
     }
@@ -38,9 +35,6 @@ public class StartScreen : BaseScreen
 
     private void OnScoresFetched(LeaderboardEntry[] entries)
     {
-        if (LeaderboardRegion == null) return;
-        var loadingLabel = LeaderboardRegion.Q<Label>("loadingLabel");
-        if (loadingLabel != null)
-            loadingLabel.style.display = DisplayStyle.None;
+        _leaderboardWidget?.SetScores(entries);
     }
 }
