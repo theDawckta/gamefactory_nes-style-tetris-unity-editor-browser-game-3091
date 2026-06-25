@@ -5,6 +5,9 @@ using UnityEngine.UIElements;
 
 public class InitialsEntryWidget : MonoBehaviour
 {
+    public event Action OnCharacterCycled;
+    public event Action OnCharacterConfirmed;
+
     [SerializeField] private GameOverScreen _gameOverScreen;
 
     private static readonly char[] ValidChars = BuildValidChars();
@@ -131,11 +134,13 @@ public class InitialsEntryWidget : MonoBehaviour
     {
         if (_awaitingConfirm) return;
         _slotIndices[_currentSlot] = (_slotIndices[_currentSlot] + direction + ValidChars.Length) % ValidChars.Length;
+        OnCharacterCycled?.Invoke();
         RefreshUI();
     }
 
     private void ConfirmCurrent()
     {
+        OnCharacterConfirmed?.Invoke();
         if (_awaitingConfirm)
         {
             SubmitScore();
